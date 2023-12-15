@@ -13,7 +13,7 @@ import HistoryImageBox from './HistoryImageBox'
 import ImageDialog from '../../common/imageDialog'
 import { CommonLoader } from '../../common/loader/CommonLoader'
 
-export default function ImageGenerationHistory () {
+export default function ImageGenerationHistory() {
   const router = useRouter()
 
   const [images, setImages] = useState<any[]>([])
@@ -33,11 +33,11 @@ export default function ImageGenerationHistory () {
     })
   }, [])
 
-  useEffect(() => {
-    if (!getToken()) {
-      router.push('/')
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (!getToken()) {
+  //     router.push('/')
+  //   }
+  // }, [])
 
   useEffect(() => {
     ImageGenerationHistory()
@@ -56,8 +56,11 @@ export default function ImageGenerationHistory () {
         setIsLoading(true)
         const res = await getImagesHistory(offset)
         setImages((preval: any) => {
-          return [...preval, ...res.data]
-        })
+          const existingIds = new Set(preval.map((item: any) => item.id));
+          const newData = res.data.filter((item: any) => !existingIds.has(item.id));
+          const updatedData = [...preval, ...newData];
+          return updatedData;
+        });
         setOffset(() => {
           return offset + res.data.length
         })
@@ -133,11 +136,10 @@ export default function ImageGenerationHistory () {
       </div>
       {!isLast && (images?.length > 0) && (
         <button
-          className={`h-14 rounded-2xl px-8 py-2 border-[2px] font-bold text-md outline-none w-34 disabled:cursor-not-allowed ${
-            !isLoading
-              ? 'bg-gradient-to-tr from-blue-2 to-teal-500 border-blue-1'
-              : 'bg-gray-800 border-gray-700'
-          }`}
+          className={`h-14 rounded-2xl px-8 py-2 border-[2px] font-bold text-md outline-none w-34 disabled:cursor-not-allowed ${!isLoading
+            ? 'bg-gradient-to-tr from-blue-2 to-teal-500 border-blue-1'
+            : 'bg-gray-800 border-gray-700'
+            }`}
           onClick={ImageGenerationHistory}
           disabled={isLoading}
         >

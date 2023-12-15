@@ -6,12 +6,12 @@ import {
   XMarkIcon
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { generateImages } from '../../../apiHelper/images'
-import { getToken } from '../../../utils/auth'
+import { useState } from 'react'
+import { generateImagesViaSQS } from '../../../apiHelper/images'
 import ImageRatioCombobox from '../../combobox/imageRatioCombobox'
 import SchedulerCombobox from '../../combobox/schedulerCombobox'
 import { CommonLoader } from '../../common/loader/CommonLoader'
+import toast from 'react-hot-toast'
 
 export const ratios: any[] = [
   {
@@ -58,7 +58,7 @@ export const ratios: any[] = [
   }
 ]
 
-export default function GenerateImage () {
+export default function GenerateImage() {
   const router = useRouter()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -68,19 +68,14 @@ export default function GenerateImage () {
     prompt: '',
     width: 1024,
     height: 1024,
-    count: 2,
+    count: 1,
     guidance_scale: 7.5,
     scheduler: 'DDIM',
     high_noise_frac: 0.8,
     prompt_strength: 0.8,
-    num_inference_steps: 50
+    num_inference_steps: 50,
+    force_fail: false
   })
-
-  useEffect(() => {
-    if (!getToken()) {
-      router.push('/')
-    }
-  }, [])
 
   const generateImage = async () => {
     try {
@@ -90,8 +85,9 @@ export default function GenerateImage () {
           return { ...preVal, prompt: 'Please enter a value' }
         })
       } else {
-        const res = await generateImages(inputs)
-        setOutput(res)
+        const res = await generateImagesViaSQS(inputs)
+        // setOutput(res)
+        toast.success('Image added to queue. Please wait for a while.')
       }
     } catch (err: any) {
       console.log(err)
@@ -111,11 +107,10 @@ export default function GenerateImage () {
         <div className='w-9/12 flex flex-col items-start gap-6'>
           <div className='w-full flex rounded-xl justify-center items-center gap-3 z-10'>
             <textarea
-              className={`scrollbar-hide overflow-scroll w-full p-3.5 py-1.5 rounded-2xl outline-none bg-[#131f29] placeholder:opacity-70 h-14 max-h-30 border-[2px] mr-2 text-md ${
-                inputError?.prompt
-                  ? 'border-orange-500 border-opacity-70'
-                  : 'border-white border-opacity-20'
-              }`}
+              className={`scrollbar-hide overflow-scroll w-full p-3.5 py-1.5 rounded-2xl outline-none bg-[#131f29] placeholder:opacity-70 h-14 max-h-30 border-[2px] mr-2 text-md ${inputError?.prompt
+                ? 'border-orange-500 border-opacity-70'
+                : 'border-white border-opacity-20'
+                }`}
               placeholder='Image description'
               name='prompt'
               value={inputs.prompt}
@@ -129,11 +124,10 @@ export default function GenerateImage () {
               }}
             />
             <button
-              className={`h-14 rounded-2xl px-8 py-2 border-[2px] font-bold text-md outline-none w-34 disabled:cursor-not-allowed ${
-                !isLoading
-                  ? 'bg-gradient-to-tr from-blue-2 to-teal-500 border-blue-1'
-                  : 'bg-gray-800 border-gray-700'
-              }`}
+              className={`h-14 rounded-2xl px-8 py-2 border-[2px] font-bold text-md outline-none w-34 disabled:cursor-not-allowed ${!isLoading
+                ? 'bg-gradient-to-tr from-blue-2 to-teal-500 border-blue-1'
+                : 'bg-gray-800 border-gray-700'
+                }`}
               onClick={generateImage}
               disabled={isLoading}
             >
@@ -146,9 +140,25 @@ export default function GenerateImage () {
               )}
             </button>
           </div>
+          <div className='flex gap-2 items-center '>
+            <input
+              id='force_fail'
+              type='checkbox'
+              value={inputs.force_fail}
+              className='cursor-pointer'
+              onChange={e => {
+                setInputs((preVal: any) => {
+                  return { ...preVal, force_fail: e.target.checked }
+                })
+              }}
+            />
+            <label htmlFor='force_fail' className='text-sm'>
+              Force Fail <i className='opacity-50'>(*This action will fail the image generation)</i>
+            </label>
+          </div>
           {isLoading && (
             <p className='text-sm text-blue-1'>
-              Hold up for a while this may take a minute...
+              Hold up for a while we are adding your request to queue...
             </p>
           )}
           <div className='w-full flex items-center justify-center mt-4'>
@@ -156,15 +166,14 @@ export default function GenerateImage () {
               {output?.data?.output.images.length > 0 ? (
                 <>
                   <div
-                    className={`w-full grid ${
-                      inputs.count === '5'
-                        ? 'grid-cols-3'
-                        : inputs.count === '1'
+                    className={`w-full grid ${inputs.count === '5'
+                      ? 'grid-cols-3'
+                      : inputs.count === '1'
                         ? 'grid-cols-1'
                         : inputs.count === '3'
-                        ? 'grid-cols-3'
-                        : 'grid-cols-2'
-                    } gap-2`}
+                          ? 'grid-cols-3'
+                          : 'grid-cols-2'
+                      } gap-2`}
                   >
                     {output?.data?.output.images.map((data: string) => {
                       return (
@@ -182,8 +191,8 @@ export default function GenerateImage () {
                     className={`w-full flex items-center text-2xl justify-center z-[5] h-[calc(100vh-208px)] opacity-20`}
                   >
                     <div className='rounded-xl bg-blue-1 bg-opacity-20 flex items-center justify-center p-24 border-2 border-blue-1 border-opacity-20 gap-4'>
-                    <PhotoIcon className='w-16 h-16 text-blue-1' />{' '}
-                    <XMarkIcon className='w-8 h-8' /> {inputs.count}
+                      <PhotoIcon className='w-16 h-16 text-blue-1' />{' '}
+                      <XMarkIcon className='w-8 h-8' /> {inputs.count}
                     </div>
                   </div>
                 </>
@@ -346,9 +355,9 @@ export default function GenerateImage () {
                   <input
                     type='range'
                     className='w-full outline-none'
-                    min='20'
-                    max='80'
-                    step='10'
+                    min='2'
+                    max='60'
+                    step='2'
                     value={inputs.num_inference_steps}
                     onChange={e => {
                       setInputs((preVal: any) => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import authRequest from "../utils/authRequest";
+import request from "../utils/request";
 
 export interface iImage {
   size: number;
@@ -51,7 +51,7 @@ export const getImageByID = (data: { id: string }): Promise<any> => {
   });
 };
 
-export const generateImages = (data?: {
+export const generateImagesViaSQS = (data?: {
   prompt: string;
   count: number;
   width: number;
@@ -63,8 +63,8 @@ export const generateImages = (data?: {
   num_inference_steps: number;
 }): Promise<any> => {
   return new Promise((resolve, reject) => {
-    authRequest({
-      url: "/image-generation/generate",
+    request({
+      url: "/image-generation/generate-via-sqs",
       method: "post",
       data,
     })
@@ -79,8 +79,8 @@ export const generateImages = (data?: {
 
 export const getImagesHistory = (offset: number): Promise<any> => {
   return new Promise((resolve, reject) => {
-    authRequest({
-      url: `/image-generation/get-my-all?offset=${offset}`,
+    request({
+      url: `/image-generation/get-all?offset=${offset}`,
       method: "post"
     })
       .then(({ data }) => {

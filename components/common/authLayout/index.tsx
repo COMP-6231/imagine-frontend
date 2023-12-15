@@ -11,7 +11,7 @@ export default function AuthLayout ({
   description?: string
   children: ReactNode
 }) {
-  const [openWaitList, setOpenWaitList] = useState(false)
+
   return (
     <div className={`font-satoshi bg-black-1 relative`}>
       <Head>

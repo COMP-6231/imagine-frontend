@@ -22,7 +22,7 @@ export default function Sidebar () {
   const AllOptions: SidebarOption[] = [
     {
       name: 'Explore',
-      link: '/',
+      link: '/explore',
       key: '',
       colorClass: 'text-[18px]',
       icon: <HomeIcon className='w-5 h-5 mobile:w-5 mobile:h-5' />

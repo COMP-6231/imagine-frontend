@@ -17,10 +17,11 @@ import { getToken } from '../../../utils/auth'
 import LoginDialog from '../../common/loginDialog'
 
 interface HomepageProps {
-  imageId?: string
+  imageId?: string;
+  explore?: boolean;
 }
 
-const Home: React.FC<HomepageProps> = () => {
+const Home: React.FC<HomepageProps> = (props: HomepageProps) => {
   const router = useRouter()
 
   const [IPv4, setIPv4] = useState<string>('')
@@ -133,12 +134,13 @@ const Home: React.FC<HomepageProps> = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (
-        document.documentElement.offsetHeight -
-        (window.innerHeight + document.documentElement.scrollTop) >=
-        200 &&
-        document.documentElement.offsetHeight -
-        (window.innerHeight + document.documentElement.scrollTop) <=
-        2500
+        (document.documentElement.offsetHeight -
+          (window.innerHeight + document.documentElement.scrollTop) >=
+          200 &&
+          document.documentElement.offsetHeight -
+          (window.innerHeight + document.documentElement.scrollTop) <=
+          2500
+        )
       ) {
         if (!fetching) {
           getData(true)
@@ -151,58 +153,28 @@ const Home: React.FC<HomepageProps> = () => {
 
   return (
     <>
-      {/* <button
-        className='flex font-bold gap-1.5 items-center justify-end w-full p-2 z-[200000] bg-gradient-to-r from-blue-2 to-teal-500 absolute top-0 left-0 right-0'
-        onClick={() => {
-          if (getToken()) {
+      {!props.explore && <>
+        <button
+          className='flex font-bold gap-1.5 items-center justify-end w-full p-2 z-[200000] bg-gradient-to-r from-blue-2 to-teal-500 absolute top-0 left-0 right-0'
+          onClick={() => {
             router.push('/generateimage')
-          } else {
-            setIsOpen(true)
-          }
-        }}
-      >
-        <p>
-          {getToken()
-            ? 'Continue to dashboard'
-            : 'Just Launched! Explore Our New Image Generator'}
-        </p>
-        <ImageIcon /> <ArrowRightIcon />
-      </button>
-      <LoginDialog isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-      <a
-        className='flex font-bold gap-1.5 items-center justify-end w-full p-2 z-[200000] absolute top-0 left-0 right-0'
-        target='_blank'
-        href='https://play.google.com/store/apps/details?id=art.picsy.deltabits&pcampaignid=web_share'
-      >
-        <div className='flex px-5 py-1.5 rounded-full border-2 border-gray-200 items-center gap-2'>
+          }}
+        >
           <p>
-            Get android app now
+            Continue to Image Generator
           </p>
-          <img
-            className='w-8 h-8'
-            src="/images/google-play.png" />
-        </div>
-      </a>
-      <LoginDialog isOpen={isOpen} setIsOpen={setIsOpen} />
-      {isLoading && <Loader loading={isLoading} />}
-      <div className='flex flex-col items-start mt-20 mobile:mt-6'>
-        <div className='flex flex-col justify-center cursor-pointer'>
-          <img
-            src={'/full-logo.svg'}
-            alt='Picsy'
-            className='object-cover h-[80px] mobile:h-[40px]'
-            onClick={() => {
-              setSearchText('')
-              router.reload()
-            }}
-          />
-        </div>
-        <div className='items-center text-blue-1 mobile:mt-1 gap-1'>
-          <h1 className='text-2xl mobile:text-sm text-transparent bg-clip-text bg-gradient-to-r from-blue-2 to-teal-500'>
-            #1 Searching tool for AI generated images
-          </h1>
-        </div>
-      </div>
+          <ImageIcon /> <ArrowRightIcon />
+        </button>
+        <LoginDialog isOpen={isOpen} setIsOpen={setIsOpen} />
+        <LoginDialog isOpen={isOpen} setIsOpen={setIsOpen} />
+        {isLoading && <Loader loading={isLoading} />}
+        <div className='flex flex-col items-start mt-20 mobile:mt-6'>
+          <div className='items-center text-blue-1 mobile:mt-1 gap-1'>
+            <h1 className='text-2xl mobile:text-sm text-transparent bg-clip-text bg-gradient-to-r from-blue-2 to-teal-500'>
+              Searching tool for AI generated images (For Midjourney)
+            </h1>
+          </div>
+        </div> </>}
       <div className='mb-16 w-2/5 sm:w-2/5 mobile:w-full tablet:w-3/5 max-w-[600px] flex justify-end items-center relative mt-16 mobile:my-8'>
         <input
           className=' w-full p-3 text-white bg-blue-2 bg-opacity-20 rounded-xl border-0 outline-0 focus:ring-2 focus:ring-opacity-40 focus:ring-blue-2'
@@ -218,7 +190,7 @@ const Home: React.FC<HomepageProps> = () => {
             }
           }}
         />
-        <div className='flex absolute mr-2 itams-center text-white bg-black-2 '>
+        <div className='flex absolute mr-2 itams-center text-white '>
           <button disabled={isLoading}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -226,7 +198,7 @@ const Home: React.FC<HomepageProps> = () => {
               viewBox='0 0 25 25'
               strokeWidth={1.5}
               stroke='currentColor'
-              className='cursor-pointer h-7 w-7 bg-blue-2 bg-opacity-10'
+              className='cursor-pointer h-7 w-7'
               onClick={() => {
                 setIsLast(false)
                 getData(false)
@@ -246,7 +218,7 @@ const Home: React.FC<HomepageProps> = () => {
               viewBox='0 0 24 24'
               strokeWidth={1.5}
               stroke='currentColor'
-              className='cursor-pointer h-7 w-7 bg-blue-2 bg-opacity-10'
+              className='cursor-pointer h-7 w-7'
               onClick={() => setSearchText('')}
             >
               <path
@@ -310,7 +282,7 @@ const Home: React.FC<HomepageProps> = () => {
           data={currentImage}
         />
       )}
-      <div className='w-full flex flex-col gap-4 items-start px-40 tablet:px-10 mobile:px-4'>
+      {!props.explore && <div className='w-full flex flex-col gap-4 items-start px-40 tablet:px-10 mobile:px-4'>
         <div className='max-w-1/2 mobile:max-w-full border-l border-blue-1 rounded-tr-xl rounded-br-xl bg-white bg-opacity-20 p-5'>
           <h2 className='text-2xl mobile:text-md text-blue-1 font-[500] mb-4'>
             Powerful image searching tool for AI generated Images
@@ -361,7 +333,7 @@ const Home: React.FC<HomepageProps> = () => {
             Diffusion.
           </p>
         </div>
-      </div>
+      </div>}
       {showButton && (
         <button
           onClick={scrollToTop}

@@ -90,7 +90,7 @@ const LoginDialog = ({ isOpen, setIsOpen }: any) => {
                   <div className='w-full flex justify-center mt-8'>
                     <div className='flex flex-end m-2 relative rounded-full w-[205px] p-[3px] pt-[2.5px] h-9 overflow-hidden'>
                       {!getToken() && (
-                        <div className='absolute flex justify-center bg-none'>
+                        <div className='absolute flex justify-center bg-none z-[999999]'>
                           <GoogleButton
                             handleSignIn={onGoogle}
                             isLoading={isLoadingWithGoogle}

@@ -64,6 +64,8 @@ export default function App(props: any) {
           />
         </noscript>
 
+        <Script src="https://accounts.google.com/gsi/client" async defer></Script>
+
         <Script
           async
           crossOrigin="anonymous"

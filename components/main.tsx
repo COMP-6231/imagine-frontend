@@ -20,9 +20,6 @@ interface MainProps {
 
 const Main: React.FC<MainProps> = ({ Component, pageProps }) => {
   const [showChild, setShowChild] = useState(false)
-  const [IPv4, setIPv4] = useState<string>('')
-  const [fp, setFp] = useState<string>('')
-  const [country, setCountry] = useState<string>('')
 
   useEffect(() => {
     setShowChild(true)
@@ -32,24 +29,21 @@ const Main: React.FC<MainProps> = ({ Component, pageProps }) => {
     try {
       getCurrentBrowserFingerPrint().then(async (fingerprint: string) => {
         const res = await axios.get('https://geolocation-db.com/json/')
-        setCountry(res.data.country_name)
-        setIPv4(res.data.IPv4)
-        setFp(fingerprint)
       })
     } catch (err: any) {
       console.log(err)
     }
   }, [])
 
-  useEffect(() => {
-    if (fp) {
-      freeLogin({
-        browser_token: fp,
-        client_country: country,
-        client_ip: IPv4
-      }).then(data => {})
-    }
-  }, [fp, country, IPv4])
+  // useEffect(() => {
+  //   if (fp) {
+  //     freeLogin({
+  //       browser_token: fp,
+  //       client_country: country,
+  //       client_ip: IPv4
+  //     }).then(data => {})
+  //   }
+  // }, [fp, country, IPv4])
 
   if (!showChild) {
     return null
