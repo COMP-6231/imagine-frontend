@@ -1,10 +1,5 @@
-import styles from "../../../styles/Home.module.css";
-import Footer from "./footer";
 import Head from "next/head";
 import { ReactNode, useState } from "react";
-import Header from "./header";
-import { ClockIcon, ShareIcon, UserPlusIcon } from "@heroicons/react/20/solid";
-import WaitlistDialog from "../waitlistDialog";
 
 export default function Layout({
   title = "",
