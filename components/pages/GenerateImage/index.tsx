@@ -374,20 +374,6 @@ export default function GenerateImage() {
           </div>
         </div>
       </div>
-      {/* <div className='bg-black h-full'>
-          <Image
-            // onClick={() => {
-            //   setIsOpenDialog(true)
-            //   setCurrentImage(data)
-            // }}
-            alt={"output"}
-            className='object-cover rounded-xl'
-            src={"https://api.picsy.art/image/989268410171006976/1071812133299433543/agabrielapaula_cute_babyrobot_in_orange_color_cartoon_d4743e33-b3da-4239-9da7-a91cb4e44ccc.png?width=1024&height=1024"}
-            unoptimized
-            width={1024}
-            height={1024}
-          />
-        </div> */}
     </>
   )
 }
